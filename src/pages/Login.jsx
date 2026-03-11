@@ -76,6 +76,9 @@ const Login = () => {
           </button>
         </form>
       </div>
+      <footer className="footer">
+        Developed by <a href="https://geethanuradha.github.io/" target="_blank" rel="noopener noreferrer">Anusys</a>
+      </footer>
     </div>
   );
 };

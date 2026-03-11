@@ -7,7 +7,12 @@ const Layout = () => {
     <div className="app-layout">
       <Sidebar />
       <main className="main-content">
-        <Outlet />
+        <div style={{ flex: 1 }}>
+          <Outlet />
+        </div>
+        <footer className="footer">
+          Developed by <a href="https://geethanuradha.github.io/" target="_blank" rel="noopener noreferrer">Anusys</a>
+        </footer>
       </main>
     </div>
   );
