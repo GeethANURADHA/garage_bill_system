@@ -135,7 +135,7 @@ const Dashboard = () => {
         />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '2rem', alignItems: 'start' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '2rem', alignItems: 'start' }}>
         <div className="card">
           <div className="card-header" style={{ padding: '1.5rem 2rem' }}>
             <h2 style={{ fontSize: '1.1rem', fontWeight: '700' }}>Recent Service Activity</h2>
@@ -180,26 +180,6 @@ const Dashboard = () => {
               </tbody>
             </table>
           </div>
-        </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-           <div className="card" style={{ background: 'var(--primary)', border: 'none', padding: '1.5rem', color: 'white' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-                 <div style={{ background: 'rgba(255,255,255,0.2)', padding: '0.75rem', borderRadius: '1rem' }}>
-                    <ShieldCheck size={24} />
-                 </div>
-                 <h3 style={{ fontSize: '1.1rem', fontWeight: '700' }}>Insurance Alerts</h3>
-              </div>
-              <p style={{ fontSize: '0.9rem', opacity: 0.9, lineHeight: '1.5', marginBottom: '1.25rem' }}>
-                There are {stats.expiringPolicies} vehicle insurance policies expiring within the next 30 days. Contact your clients today.
-              </p>
-              <button 
-                onClick={() => navigate('/vehicles')}
-                style={{ width: '100%', padding: '0.75rem', borderRadius: '0.75rem', border: 'none', background: 'white', color: 'var(--primary)', fontWeight: '700', cursor: 'pointer' }}
-              >
-                Review Policies
-              </button>
-           </div>
         </div>
       </div>
     </div>
