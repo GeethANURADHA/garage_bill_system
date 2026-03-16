@@ -89,7 +89,7 @@ const VehicleDetails = () => {
         </button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 320px) minmax(0, 1fr)', gap: '2rem', alignItems: 'start' }}>
+      <div className="responsive-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 320px) minmax(0, 1fr)', gap: '2rem', alignItems: 'start' }}>
         
         {/* Left Column: Side Information */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>

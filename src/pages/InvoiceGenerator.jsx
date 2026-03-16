@@ -7,6 +7,8 @@ import {
   Trash2, Tag, Receipt, ShieldCheck, ChevronRight, Save
 } from 'lucide-react';
 
+import logo from '../assets/logo.png';
+
 const InvoiceGenerator = () => {
   const { invoiceId } = useParams();
   const [searchParams] = useSearchParams();
@@ -98,83 +100,153 @@ const InvoiceGenerator = () => {
 
   const generatePDF = () => {
     const vehicle = vehicles.find(v => v.id === selectedVehicleId);
-    if (!vehicle) return;
+    if (!vehicle) return null;
 
     const doc = new jsPDF();
-    const primaryColor = [34, 197, 94];
     
-    // Header
-    doc.setFontSize(26);
-    doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-    doc.text('ISHARA MOTORS', 105, 20, { align: 'center' });
+    // Header Section
+    // Logo (Top Left)
+    try {
+      doc.addImage(logo, 'PNG', 15, 10, 60, 30);
+    } catch (e) {
+      console.warn("Logo failed to load in PDF", e);
+    }
+    
+    // Business Info (Top Right)
+    doc.setFontSize(22);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(33, 37, 41);
+    doc.text('ISHARA MOTORS', 195, 20, { align: 'right' });
     
     doc.setFontSize(10);
-    doc.setTextColor(100);
-    doc.text('Premium Vehicle Care & Service Garage', 105, 28, { align: 'center' });
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(50, 50, 50);
+    doc.text('54/C, Sri Saranankara Mawatha, Rilawla, Polgasowita', 195, 27, { align: 'right' });
+    doc.text('Mobile: 0719656885', 195, 33, { align: 'right' });
+    doc.text('Email: motorsishara65@gmail.com', 195, 39, { align: 'right' });
+
+    // Center Title "INVOICE"
+    doc.setFontSize(18);
+    doc.setFont('times', 'normal');
+    doc.text('INVOICE', 105, 55, { align: 'center' });
+
+    // Client and Invoice Metadata Section
+    doc.setFontSize(11);
     
-    // Line
+    // Left: Customer Info
+    let metaY = 75;
+    doc.setFont('helvetica', 'bold');
+    doc.text('Customer Name :', 20, metaY);
+    doc.setFont('helvetica', 'normal');
+    doc.text(vehicle.owner_name, 55, metaY);
+    
+    metaY += 8;
+    doc.setFont('helvetica', 'bold');
+    doc.text('Contact No :', 20, metaY);
+    doc.setFont('helvetica', 'normal');
+    doc.text(vehicle.phone || 'N/A', 55, metaY);
+    
+    metaY += 8;
+    doc.setFont('helvetica', 'bold');
+    doc.text('Customer Address :', 20, metaY);
+    doc.setFont('helvetica', 'normal');
+    doc.text(vehicle.address || 'N/A', 58, metaY);
+    
+    metaY += 8;
+    doc.setFont('helvetica', 'bold');
+    doc.text('Vehicle No :', 20, metaY);
+    doc.setFont('helvetica', 'normal');
+    doc.text(vehicle.vehicle_number, 55, metaY);
+
+    // Right: Invoice Metadata
+    let rightMetaY = 75;
+    doc.setFont('helvetica', 'bold');
+    doc.text('Date :', 135, rightMetaY);
+    doc.setFont('helvetica', 'normal');
+    doc.text(new Date(invoiceDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }), 150, rightMetaY);
+    
+    rightMetaY += 8;
+    doc.setFont('helvetica', 'bold');
+    doc.text('Invoice No :', 135, rightMetaY);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`INV-${Date.now().toString().slice(-6)}`, 160, rightMetaY);
+
+    // Items Table
     doc.setDrawColor(200);
-    doc.line(20, 35, 190, 35);
+    doc.line(15, 110, 195, 110); // Top line
     
-    // Client section
-    doc.setTextColor(0);
-    doc.setFontSize(9);
-    doc.text('BILL TO:', 20, 45);
-    doc.setFontSize(14);
-    doc.text(vehicle.owner_name, 20, 52);
-    doc.setFontSize(10);
-    doc.text(`${vehicle.vehicle_number} - ${vehicle.brand} ${vehicle.model}`, 20, 58);
-    doc.text(`Phone: ${vehicle.phone}`, 20, 63);
-    
-    // Invoice details
-    doc.text(`Invoice Date: ${new Date(invoiceDate).toLocaleDateString()}`, 140, 52);
-    doc.text(`Invoice ID: INV-${Date.now().toString().slice(-6)}`, 140, 58);
-    
-    // Table
     doc.setFillColor(248, 250, 252);
-    doc.rect(20, 75, 170, 10, 'F');
+    doc.rect(15, 110, 180, 10, 'F');
+    
+    doc.setFont('helvetica', 'bold');
     doc.setFontSize(10);
-    doc.setTextColor(0);
-    doc.text('Description', 25, 81.5);
-    doc.text('Qty', 110, 81.5);
-    doc.text('Price ($)', 135, 81.5);
-    doc.text('Total ($)', 165, 81.5);
+    doc.text('Description', 20, 116.5);
+    doc.text('Qty', 120, 116.5);
+    doc.text('Unit Price', 145, 116.5);
+    doc.text('Amount', 175, 116.5);
     
-    let y = 95;
+    doc.line(15, 120, 195, 120); // Header bottom line
+    
+    let y = 127;
+    doc.setFont('helvetica', 'normal');
     items.forEach(item => {
-      doc.text(item.description, 25, y);
-      doc.text(item.qty.toString(), 110, y);
-      doc.text(`$${Number(item.price).toFixed(2)}`, 135, y);
-      doc.text(`$${(item.qty * item.price).toFixed(2)}`, 165, y);
-      y += 10;
+      doc.text(item.description, 20, y);
+      doc.text(item.qty.toString(), 120, y);
+      doc.text(`${Number(item.price).toFixed(2)}`, 145, y);
+      doc.text(`${(item.qty * item.price).toFixed(2)}`, 175, y);
+      y += 8;
     });
-    
-    // Summary line
-    doc.setDrawColor(200);
-    doc.line(20, y, 190, y);
+
+    // Subtotal and Calculations
+    doc.line(15, y, 195, y);
     y += 10;
     
-    // Financials
-    doc.text('Subtotal:', 135, y);
-    doc.text(`$${subtotal.toFixed(2)}`, 165, y);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Subtotal', 145, y);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`${subtotal.toFixed(2)}`, 175, y);
+    
     y += 8;
-    doc.text('Service Charge:', 135, y);
-    doc.text(`$${Number(serviceCharge).toFixed(2)}`, 165, y);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Service Charge', 145, y);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`${Number(serviceCharge).toFixed(2)}`, 175, y);
+    
     y += 8;
-    doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-    doc.text('Insurance Approved:', 135, y);
-    doc.text(`-$${Number(insuranceApprovedAmount).toFixed(2)}`, 165, y);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Insurance Approved', 145, y);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`-${Number(insuranceApprovedAmount).toFixed(2)}`, 175, y);
+    
     y += 12;
+    doc.setFillColor(33, 37, 41);
+    doc.rect(140, y - 6, 55, 10, 'F');
+    doc.setTextColor(255);
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text('TOTAL DUE', 143, y);
+    doc.text(`${totalDue.toFixed(2)}`, 175, y);
     
-    doc.setFontSize(14);
     doc.setTextColor(0);
-    doc.text('TOTAL DUE', 100, y);
-    doc.text(`$${totalDue.toFixed(2)}`, 165, y);
     
-    // Note
-    doc.setFontSize(9);
-    doc.setTextColor(150);
-    doc.text('Thank you for choosing Ishara Motors. Have a safe drive!', 105, y + 30, { align: 'center' });
+    // Summary Section
+    if (summary) {
+      y += 20;
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'bold');
+      doc.text('SERVICES PERFORMED SUMMARY:', 15, y);
+      y += 6;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      const splitSummary = doc.splitTextToSize(summary, 170);
+      doc.text(splitSummary, 15, y);
+    }
+
+    // Footer
+    doc.setFontSize(8);
+    doc.setTextColor(100);
+    doc.text('Thank you for your business!', 105, 280, { align: 'center' });
+    doc.text('Ishara Motors - Premium Garage Management', 105, 285, { align: 'center' });
 
     return doc;
   };
@@ -183,68 +255,69 @@ const InvoiceGenerator = () => {
     if (!selectedVehicleId) return alert('Please select a vehicle');
     setUploading(true);
     
-    const doc = generatePDF();
-    const pdfBlob = doc.output('blob');
-    const fileName = `invoice-${Date.now()}-${selectedVehicleId}.pdf`;
+    try {
+      const doc = generatePDF();
+      if (!doc) throw new Error("PDF generation failed");
+      
+      const pdfBlob = doc.output('blob');
+      const fileName = `invoice-${Date.now()}-${selectedVehicleId}.pdf`;
 
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('invoices')
-      .upload(fileName, pdfBlob);
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('invoices')
+        .upload(fileName, pdfBlob);
 
-    if (uploadError) {
-      alert('Upload failed: ' + uploadError.message);
-      setUploading(false);
-      return;
-    }
+      if (uploadError) throw uploadError;
 
-    const { data: { publicUrl } } = supabase.storage
-      .from('invoices')
-      .getPublicUrl(fileName);
+      const { data: { publicUrl } } = supabase.storage
+        .from('invoices')
+        .getPublicUrl(fileName);
 
-    const invoiceData = {
-      vehicle_id: selectedVehicleId,
-      total_amount: totalDue,
-      items: {
-        items,
-        serviceCharge,
-        insuranceApprovedAmount,
-        summary
-      },
-      pdf_url: publicUrl,
-    };
+      const invoiceData = {
+        vehicle_id: selectedVehicleId,
+        total_amount: totalDue,
+        items: {
+          items,
+          serviceCharge,
+          insuranceApprovedAmount,
+          summary
+        },
+        pdf_url: publicUrl,
+      };
 
-    const { error: dbError } = invoiceId
-      ? await supabase.from('invoices').update(invoiceData).eq('id', invoiceId)
-      : await supabase.from('invoices').insert([{
-          ...invoiceData,
-          invoice_number: `INV-${Date.now().toString().slice(-6)}`
-        }]);
+      const { error: dbError } = invoiceId
+        ? await supabase.from('invoices').update(invoiceData).eq('id', invoiceId)
+        : await supabase.from('invoices').insert([{
+            ...invoiceData,
+            invoice_number: `INV-${Date.now().toString().slice(-6)}`
+          }]);
 
-    if (dbError) {
-      console.error("Invoice Save Error:", dbError);
-      alert('FAILED TO SAVE INVOICE: ' + (dbError.message || JSON.stringify(dbError)));
-    } else {
+      if (dbError) throw dbError;
+
       setSuccess(true);
       setTimeout(() => navigate('/invoices'), 2000);
+    } catch (err) {
+      console.error("Invoice Save Error:", err);
+      alert('FAILED TO SAVE INVOICE: ' + (err.message || JSON.stringify(err)));
+    } finally {
+      setUploading(false);
     }
-    setUploading(false);
   };
 
   if (loading) return <div>Loading portal...</div>;
 
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginBottom: '2rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
         <button onClick={() => navigate(-1)} className="card" style={{ padding: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
           <ArrowLeft size={20} className="text-muted" />
         </button>
-        <div>
+        <div style={{ flex: '1 1 300px' }}>
            <h1 style={{ fontSize: '1.75rem', fontWeight: '800', letterSpacing: '-0.5px' }}>Create New Invoice</h1>
-           <p className="text-muted">Generate a professional bill for services rendered and parts replaced.</p>
+           <p className="text-muted">Generate a professional bill for services rendered.</p>
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 340px', gap: '2rem', alignItems: 'start' }}>
+      <div className="invoice-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 340px', gap: '2rem', alignItems: 'start' }}>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           {/* Customer Selection */}
@@ -290,8 +363,8 @@ const InvoiceGenerator = () => {
                 Add Line Item
               </button>
             </div>
-            <div style={{ padding: '1.5rem' }}>
-              <table style={{ border: 'none' }}>
+            <div style={{ padding: '1.5rem' }} className="table-container">
+              <table style={{ border: 'none', minWidth: '600px' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc' }}>
                     <th style={{ borderRadius: '0.5rem 0 0 0.5rem', padding: '0.75rem 1rem' }}>Description</th>
@@ -368,7 +441,7 @@ const InvoiceGenerator = () => {
         </div>
 
         {/* Right Column: Sticky Summary */}
-        <div style={{ position: 'sticky', top: '2rem' }}>
+        <div className="sticky-sidebar" style={{ position: 'sticky', top: '2rem' }}>
           <div className="card" style={{ boxShadow: 'var(--shadow-lg)', border: 'none' }}>
             <div style={{ background: '#0f172a', padding: '1.5rem', color: 'white' }}>
               <h3 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '1.5rem', opacity: 0.8 }}>Invoice Summary</h3>
@@ -394,7 +467,7 @@ const InvoiceGenerator = () => {
               </div>
 
               <div className="form-group" style={{ marginBottom: 0 }}>
-                <label style={{ fontWeight: '600', color: 'var(--text-muted)' }}>Insurance Approved Amount</label>
+                <label style={{ fontWeight: '600', color: 'var(--text-muted)' }}>Insurance <br></br> Approved Amount</label>
                 <div style={{ position: 'relative', display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
                    <span style={{ position: 'absolute', left: '1rem', color: 'var(--text-muted)' }}>$</span>
                    <input 

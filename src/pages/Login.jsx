@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { LogIn, Key, Mail } from 'lucide-react';
+import logo from '../assets/logo.png';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -32,10 +33,10 @@ const Login = () => {
     <div className="login-container">
       <div className="login-box">
         <div className="login-header">
-          <div className="logo-icon">
-            <Key size={32} />
+          <div className="logo-display" style={{ marginBottom: '1.5rem' }}>
+            <img src={logo} alt="Ishara Motors Logo" style={{ width: '150px', height: 'auto', margin: '0 auto', display: 'block' }} />
           </div>
-          <h1>Garage Admin</h1>
+          <h1 style={{ fontSize: '1.5rem', marginTop: '1rem' }}>Garage Admin</h1>
           <p>Sign in to manage your garage</p>
         </div>
         

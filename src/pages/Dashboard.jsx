@@ -135,9 +135,9 @@ const Dashboard = () => {
         />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '2rem', alignItems: 'start' }}>
+      <div style={{ marginTop: '2rem' }}>
         <div className="card">
-          <div className="card-header" style={{ padding: '1.5rem 2rem' }}>
+          <div className="card-header" style={{ padding: '1.25rem 1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
             <h2 style={{ fontSize: '1.1rem', fontWeight: '700' }}>Recent Service Activity</h2>
             <button onClick={() => navigate('/vehicles')} style={{ background: 'none', border: 'none', color: 'var(--primary)', fontWeight: '700', fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
               View All <ArrowRight size={16} />

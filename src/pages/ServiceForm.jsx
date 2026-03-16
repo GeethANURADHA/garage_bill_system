@@ -147,7 +147,7 @@ const ServiceForm = () => {
               Service Details
             </div>
           </div>
-          <div style={{ padding: '1.5rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+          <div className="grid-2-col" style={{ padding: '1.5rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
             <div className="form-group" style={{ marginBottom: 0 }}>
               <label style={{ fontWeight: '600', color: 'var(--text-main)', fontSize: '0.85rem' }}>Service Date <span className="text-danger">*</span></label>
               <input 

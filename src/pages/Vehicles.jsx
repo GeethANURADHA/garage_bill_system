@@ -41,8 +41,8 @@ const Vehicles = () => {
       </div>
 
       <div className="card" style={{ marginBottom: '2rem' }}>
-        <div style={{ padding: '1.25rem 1.5rem', display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-           <div className="search-container" style={{ flex: 1 }}>
+        <div style={{ padding: '1.25rem 1.5rem', display: 'flex', gap: '1.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+           <div className="search-container" style={{ flex: '1 1 300px' }}>
              <Search size={20} />
              <input 
                type="text" 
@@ -52,15 +52,15 @@ const Vehicles = () => {
                onChange={(e) => setSearchTerm(e.target.value)}
              />
            </div>
-           <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <div style={{ padding: '0.5rem 1rem', background: 'var(--accent)', color: 'var(--primary)', borderRadius: '0.5rem', fontWeight: '600', fontSize: '0.85rem' }}>
+           <div style={{ display: 'flex', gap: '0.5rem', width: 'auto' }}>
+              <div style={{ padding: '0.5rem 1rem', background: 'var(--accent)', color: 'var(--primary)', borderRadius: '0.5rem', fontWeight: '600', fontSize: '0.85rem', whiteSpace: 'nowrap' }}>
                  {filteredVehicles.length} Total Vehicles
               </div>
            </div>
         </div>
       </div>
 
-      <div className="dashboard-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))' }}>
+      <div className="dashboard-grid">
         {loading ? (
           <div>Loading vehicles...</div>
         ) : filteredVehicles.length > 0 ? filteredVehicles.map(v => (

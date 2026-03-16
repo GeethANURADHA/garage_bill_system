@@ -114,7 +114,7 @@ const VehicleForm = () => {
       </div>
 
       <form onSubmit={handleSubmit}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: '2rem', alignItems: 'start' }}>
+        <div className="responsive-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: '2rem', alignItems: 'start' }}>
           
           {/* Section 1: Vehicle Info */}
           <div className="card">
@@ -125,7 +125,7 @@ const VehicleForm = () => {
               </div>
             </div>
             <div style={{ padding: '2rem' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+              <div className="grid-2-col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
                 <div className="form-group">
                   <label>Vehicle Number</label>
                   <input 
@@ -233,7 +233,7 @@ const VehicleForm = () => {
             </div>
             
             <div style={{ padding: '2rem', opacity: showInsurance ? 1 : 0.4, pointerEvents: showInsurance ? 'all' : 'none', transition: 'all 0.3s' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+              <div className="grid-2-col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
                 <div className="form-group">
                   <label>Insurance Company</label>
                   <input 

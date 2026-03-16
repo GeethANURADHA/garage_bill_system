@@ -51,8 +51,8 @@ const Invoices = () => {
       </div>
 
       <div className="card" style={{ marginBottom: '2rem' }}>
-        <div style={{ padding: '1.25rem 1.5rem', display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-          <div className="search-container" style={{ flex: 1 }}>
+        <div style={{ padding: '1.25rem 1.5rem', display: 'flex', gap: '1.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+          <div className="search-container" style={{ flex: '1 1 300px' }}>
             <Search size={20} />
             <input 
               type="text" 
@@ -62,12 +62,12 @@ const Invoices = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: '1 1 200px' }}>
             <Calendar size={18} className="text-muted" />
             <input 
               type="date" 
               className="search-input" 
-              style={{ width: '180px', paddingLeft: '1rem' }} 
+              style={{ width: '100%', paddingLeft: '1rem' }} 
               value={dateFilter}
               onChange={(e) => setDateFilter(e.target.value)}
             />
