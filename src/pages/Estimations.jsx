@@ -130,7 +130,7 @@ const Estimations = () => {
                     </td>
                     <td style={{ padding: '1.25rem 1.5rem' }}>
                       <span style={{ fontWeight: '800', color: 'var(--primary)', fontSize: '1rem' }}>
-                        ${Number(est.total_cost).toFixed(2)}
+                        Rs. {Number(est.total_cost).toFixed(2)}
                       </span>
                     </td>
                     <td style={{ padding: '1.25rem 1.5rem', textAlign: 'right' }}>

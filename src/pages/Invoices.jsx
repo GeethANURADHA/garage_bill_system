@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ExternalLink, Receipt, Search, Car, Calendar, DollarSign, FileText, ArrowRight, User, Edit, Trash2 } from 'lucide-react';
+import { ExternalLink, Receipt, Search, Car, Calendar, Banknote, FileText, ArrowRight, User, Edit, Trash2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useNavigate } from 'react-router-dom';
 
@@ -108,7 +108,7 @@ const Invoices = () => {
                   </td>
                   <td>
                     <div style={{ fontWeight: '800', color: 'var(--text-main)', fontSize: '1.1rem' }}>
-                       ${Number(inv.total_amount).toLocaleString()}
+                       Rs. {Number(inv.total_amount).toLocaleString()}
                     </div>
                     <div className="badge badge-success" style={{ fontSize: '0.65rem', padding: '0.15rem 0.5rem' }}>PAID</div>
                   </td>

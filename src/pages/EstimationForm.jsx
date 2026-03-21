@@ -220,7 +220,7 @@ const EstimationForm = () => {
     doc.setFillColor(33, 37, 41);
     doc.rect(110, y - 6, 85, 10, 'F');
     doc.setTextColor(255);
-    drawSummaryRow('TOTAL ESTIMATED COST', formData.total_cost, true);
+    drawSummaryRow('TOTAL ESTIMATED COST (Rs.)', formData.total_cost, true);
     doc.setTextColor(0);
 
     // Signature
@@ -450,7 +450,7 @@ const EstimationForm = () => {
                 <thead>
                   <tr style={{ background: 'var(--bg-main)' }}>
                     <th style={{ padding: '0.75rem' }}>Description</th>
-                    <th style={{ width: '150px', padding: '0.75rem' }}>Estimated Cost ($)</th>
+                    <th style={{ width: '150px', padding: '0.75rem' }}>Estimated Cost (Rs.)</th>
                     <th style={{ width: '50px' }}></th>
                   </tr>
                 </thead>
@@ -495,7 +495,7 @@ const EstimationForm = () => {
               <h3 style={{ fontSize: '1rem', opacity: 0.8, marginBottom: '1rem' }}>Cost Breakdown</h3>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                 <span style={{ fontSize: '0.9rem', opacity: 0.7 }}>Parts Total</span>
-                <span style={{ fontWeight: '600' }}>${formData.parts_cost.toFixed(2)}</span>
+                <span style={{ fontWeight: '600' }}>Rs. {formData.parts_cost.toFixed(2)}</span>
               </div>
             </div>
             
@@ -503,7 +503,7 @@ const EstimationForm = () => {
               <div className="form-group" style={{ marginBottom: 0 }}>
                 <label>Labor Charges</label>
                 <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                  <span style={{ position: 'absolute', left: '1rem', color: 'var(--text-muted)' }}>$</span>
+                  <span style={{ position: 'absolute', left: '1rem', color: 'var(--text-muted)' }}>Rs.</span>
                   <input 
                     type="number"
                     className="search-input"
@@ -517,7 +517,7 @@ const EstimationForm = () => {
               <div className="form-group" style={{ marginBottom: 0 }}>
                 <label>Additional Charges</label>
                 <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                  <span style={{ position: 'absolute', left: '1rem', color: 'var(--text-muted)' }}>$</span>
+                  <span style={{ position: 'absolute', left: '1rem', color: 'var(--text-muted)' }}>Rs.</span>
                   <input 
                     type="number"
                     className="search-input"
@@ -530,7 +530,7 @@ const EstimationForm = () => {
 
               <div style={{ marginTop: '1rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontWeight: '700' }}>Total Estimate</span>
-                <span style={{ fontWeight: '800', fontSize: '1.5rem', color: 'var(--primary)' }}>${formData.total_cost.toFixed(2)}</span>
+                <span style={{ fontWeight: '800', fontSize: '1.5rem', color: 'var(--primary)' }}>Rs. {formData.total_cost.toFixed(2)}</span>
               </div>
 
               <button 

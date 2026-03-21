@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
-  ArrowLeft, Plus, Trash2, Calendar, DollarSign, 
+  ArrowLeft, Plus, Trash2, Calendar, Banknote, 
   Settings, Briefcase, Package, ClipboardList, Save, X
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -160,7 +160,7 @@ const ServiceForm = () => {
               />
             </div>
             <div className="form-group" style={{ marginBottom: 0 }}>
-              <label style={{ fontWeight: '600', color: 'var(--text-main)', fontSize: '0.85rem' }}>Total Cost ($) <span className="text-danger">*</span></label>
+              <label style={{ fontWeight: '600', color: 'var(--text-main)', fontSize: '0.85rem' }}>Total Cost (Rs.) <span className="text-danger">*</span></label>
               <input 
                 type="number" 
                 step="0.01"

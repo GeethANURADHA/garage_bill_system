@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, User, Phone, Car, Receipt, Plus, Briefcase, 
   Trash2, Calendar, Tag, ShieldCheck, FileWarning, 
-  AlertCircle, ChevronRight, DollarSign, Edit, Eye, Clock
+  AlertCircle, ChevronRight, Banknote, Edit, Eye, Clock
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
@@ -233,7 +233,7 @@ const VehicleDetails = () => {
                         </div>
                         <div className="text-muted" style={{ fontSize: '0.85rem' }}>Services: {s.service_name}</div>
                       </div>
-                      <div style={{ fontWeight: '800', fontSize: '1.25rem' }}>${Number(s.total_cost || 0).toLocaleString()}</div>
+                      <div style={{ fontWeight: '800', fontSize: '1.25rem' }}>Rs. {Number(s.total_cost || 0).toLocaleString()}</div>
                       <div style={{ display: 'flex', gap: '0.5rem', marginLeft: '1rem' }}>
                         <button className="nav-link" style={{ padding: '0.5rem' }} onClick={() => setSelectedService(s)} title="View Details"><Eye size={18} className="text-primary" /></button>
                         <button className="nav-link" style={{ padding: '0.5rem' }} onClick={() => navigate(`/invoices/new?serviceId=${s.id}`)} title="Create Bill"><Receipt size={18} className="text-primary" /></button>
@@ -256,7 +256,7 @@ const VehicleDetails = () => {
                         </div>
                         <div className="text-muted" style={{ fontSize: '0.85rem' }}>Date: {new Date(inv.created_at).toLocaleDateString()}</div>
                       </div>
-                      <div style={{ fontWeight: '800', fontSize: '1.25rem' }}>${Number(inv.total_amount || 0).toLocaleString()}</div>
+                      <div style={{ fontWeight: '800', fontSize: '1.25rem' }}>Rs. {Number(inv.total_amount || 0).toLocaleString()}</div>
                       <div style={{ display: 'flex', gap: '0.5rem', marginLeft: '1rem' }}>
                         <a href={inv.pdf_url} target="_blank" rel="noopener noreferrer" className="nav-link" style={{ padding: '0.5rem' }} title="View PDF"><Eye size={18} className="text-primary" /></a>
                         <button className="nav-link" style={{ padding: '0.5rem' }} onClick={() => navigate(`/invoices/edit/${inv.id}`)} title="Edit Bill"><Edit size={18} className="text-primary" /></button>
@@ -278,7 +278,7 @@ const VehicleDetails = () => {
                         </div>
                         <div className="text-muted" style={{ fontSize: '0.85rem' }}>Status: <span style={{ color: c.status === 'Approved' ? 'var(--success)' : 'var(--danger)', fontWeight: '600' }}>{c.status}</span></div>
                       </div>
-                      <div style={{ fontWeight: '800', fontSize: '1.25rem' }}>${Number(c.claim_amount || 0).toLocaleString()}</div>
+                      <div style={{ fontWeight: '800', fontSize: '1.25rem' }}>Rs. {Number(c.claim_amount || 0).toLocaleString()}</div>
                       <div style={{ display: 'flex', gap: '0.5rem', marginLeft: '1rem' }}>
                         <button className="nav-link" style={{ padding: '0.5rem' }} onClick={() => handleDelete('insurance_claims', c.id)} title="Delete"><Trash2 size={18} className="text-danger" /></button>
                       </div>
@@ -334,7 +334,7 @@ const VehicleDetails = () => {
               <div style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: '1rem', border: '1px solid var(--border)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontWeight: '600', color: 'var(--text-muted)' }}>Total Cost</span>
-                  <span style={{ fontSize: '1.5rem', fontWeight: '800', color: 'var(--primary)' }}>${Number(selectedService.total_cost || selectedService.cost || 0).toLocaleString()}</span>
+                  <span style={{ fontSize: '1.5rem', fontWeight: '800', color: 'var(--primary)' }}>Rs. {Number(selectedService.total_cost || selectedService.cost || 0).toLocaleString()}</span>
                 </div>
               </div>
               {selectedService.notes && (
@@ -365,7 +365,7 @@ const VehicleDetails = () => {
                 <input type="text" value={newClaim.claim_number} onChange={(e) => setNewClaim({...newClaim, claim_number: e.target.value})} required placeholder="e.g. CLM-123456" />
               </div>
               <div className="form-group">
-                <label>Claim Amount</label>
+                <label>Claim Amount (Rs.)</label>
                 <input type="number" value={newClaim.claim_amount} onChange={(e) => setNewClaim({...newClaim, claim_amount: Number(e.target.value)})} required />
               </div>
               <div className="form-group">

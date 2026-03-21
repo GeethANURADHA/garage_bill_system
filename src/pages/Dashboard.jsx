@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Car, Wrench, DollarSign, Clock, ShieldCheck, AlertTriangle, ArrowRight, User } from 'lucide-react';
+import { Car, Wrench, Banknote, Clock, ShieldCheck, AlertTriangle, ArrowRight, User } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useNavigate } from 'react-router-dom';
 
@@ -118,7 +118,7 @@ const Dashboard = () => {
       <div className="dashboard-grid">
         <StatCard icon={Car} label="Total Vehicles" value={stats.vehicles} color="var(--primary)" />
         <StatCard icon={Wrench} label="Total Services" value={stats.services} color="#6366f1" />
-        <StatCard icon={DollarSign} label="Total Income" value={`$${stats.income.toLocaleString()}`} color="#f59e0b" />
+        <StatCard icon={Banknote} label="Total Income" value={`Rs. ${stats.income.toLocaleString()}`} color="#f59e0b" />
         <StatCard 
           icon={ShieldCheck} 
           label="Insurance Policies" 
@@ -169,7 +169,7 @@ const Dashboard = () => {
                       {new Date(service.date).toLocaleDateString()}
                     </td>
                     <td style={{ textAlign: 'right', fontWeight: '800', color: 'var(--primary)' }}>
-                      ${Number(service.display_cost).toLocaleString()}
+                      Rs. {Number(service.display_cost).toLocaleString()}
                     </td>
                   </tr>
                 )) : (

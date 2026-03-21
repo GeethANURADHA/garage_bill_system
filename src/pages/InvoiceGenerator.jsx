@@ -4,7 +4,7 @@ import { jsPDF } from 'jspdf';
 import { supabase } from '../lib/supabase';
 import { 
   ArrowLeft, Download, UploadCloud, CheckCircle, Plus, 
-  Trash2, Tag, Receipt, ShieldCheck, ChevronRight, Save
+  Trash2, Tag, Receipt, ShieldCheck, ChevronRight, Save, Banknote
 } from 'lucide-react';
 
 import logo from '../assets/logo.png';
@@ -192,8 +192,8 @@ const InvoiceGenerator = () => {
     items.forEach(item => {
       doc.text(item.description, 20, y);
       doc.text(item.qty.toString(), 120, y);
-      doc.text(`${Number(item.price).toFixed(2)}`, 145, y);
-      doc.text(`${(item.qty * item.price).toFixed(2)}`, 175, y);
+      doc.text(`Rs. ${Number(item.price).toFixed(2)}`, 145, y);
+      doc.text(`Rs. ${(item.qty * item.price).toFixed(2)}`, 175, y);
       y += 8;
     });
 
@@ -204,19 +204,19 @@ const InvoiceGenerator = () => {
     doc.setFont('helvetica', 'bold');
     doc.text('Subtotal', 145, y);
     doc.setFont('helvetica', 'normal');
-    doc.text(`${subtotal.toFixed(2)}`, 175, y);
+    doc.text(`Rs. ${subtotal.toFixed(2)}`, 175, y);
     
     y += 8;
     doc.setFont('helvetica', 'bold');
     doc.text('Service Charge', 145, y);
     doc.setFont('helvetica', 'normal');
-    doc.text(`${Number(serviceCharge).toFixed(2)}`, 175, y);
+    doc.text(`Rs. ${Number(serviceCharge).toFixed(2)}`, 175, y);
     
     y += 8;
     doc.setFont('helvetica', 'bold');
     doc.text('Insurance Approved', 145, y);
     doc.setFont('helvetica', 'normal');
-    doc.text(`-${Number(insuranceApprovedAmount).toFixed(2)}`, 175, y);
+    doc.text(`-Rs. ${Number(insuranceApprovedAmount).toFixed(2)}`, 175, y);
     
     y += 12;
     doc.setFillColor(33, 37, 41);
@@ -224,7 +224,7 @@ const InvoiceGenerator = () => {
     doc.setTextColor(255);
     doc.setFontSize(12);
     doc.setFont('helvetica', 'bold');
-    doc.text('TOTAL DUE', 143, y);
+    doc.text('TOTAL DUE (Rs.)', 115, y);
     doc.text(`${totalDue.toFixed(2)}`, 175, y);
     
     doc.setTextColor(0);
@@ -369,7 +369,7 @@ const InvoiceGenerator = () => {
                   <tr style={{ background: '#f8fafc' }}>
                     <th style={{ borderRadius: '0.5rem 0 0 0.5rem', padding: '0.75rem 1rem' }}>Description</th>
                     <th style={{ width: '100px', padding: '0.75rem 1rem' }}>Qty</th>
-                    <th style={{ width: '150px', padding: '0.75rem 1rem' }}>Price ($)</th>
+                    <th style={{ width: '150px', padding: '0.75rem 1rem' }}>Price (Rs.)</th>
                     <th style={{ width: '50px', padding: '0.75rem 1rem', borderRadius: '0 0.5rem 0.5rem 0' }}></th>
                   </tr>
                 </thead>
@@ -447,7 +447,7 @@ const InvoiceGenerator = () => {
               <h3 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '1.5rem', opacity: 0.8 }}>Invoice Summary</h3>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: '0.9rem', opacity: 0.7 }}>Subtotal</span>
-                <span style={{ fontSize: '1.1rem', fontWeight: '700' }}>${subtotal.toFixed(2)}</span>
+                <span style={{ fontSize: '1.1rem', fontWeight: '700' }}>Rs. {subtotal.toFixed(2)}</span>
               </div>
             </div>
             
@@ -455,7 +455,7 @@ const InvoiceGenerator = () => {
               <div className="form-group" style={{ marginBottom: 0 }}>
                 <label style={{ fontWeight: '600', color: 'var(--text-muted)' }}>Service Charge</label>
                 <div style={{ position: 'relative', display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
-                   <span style={{ position: 'absolute', left: '1rem', color: 'var(--text-muted)' }}>$</span>
+                   <span style={{ position: 'absolute', left: '1rem', color: 'var(--text-muted)' }}>Rs.</span>
                    <input 
                     type="number"
                     className="search-input" 
@@ -469,7 +469,7 @@ const InvoiceGenerator = () => {
               <div className="form-group" style={{ marginBottom: 0 }}>
                 <label style={{ fontWeight: '600', color: 'var(--text-muted)' }}>Insurance <br></br> Approved Amount</label>
                 <div style={{ position: 'relative', display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
-                   <span style={{ position: 'absolute', left: '1rem', color: 'var(--text-muted)' }}>$</span>
+                   <span style={{ position: 'absolute', left: '1rem', color: 'var(--text-muted)' }}>Rs.</span>
                    <input 
                     type="number"
                     className="search-input" 
@@ -482,7 +482,7 @@ const InvoiceGenerator = () => {
 
               <div style={{ marginTop: '1rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontWeight: '700', fontSize: '1rem' }}>Total Due</span>
-                <span style={{ fontWeight: '800', fontSize: '1.75rem', color: 'var(--primary)' }}>${totalDue.toFixed(2)}</span>
+                <span style={{ fontWeight: '800', fontSize: '1.75rem', color: 'var(--primary)' }}>Rs. {totalDue.toFixed(2)}</span>
               </div>
 
               <button 
