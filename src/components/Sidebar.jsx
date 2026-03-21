@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Car, Receipt, LogOut, X } from 'lucide-react';
+import { LayoutDashboard, Car, Receipt, LogOut, X, ClipboardList } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import logo from '../assets/logo.png';
 
@@ -65,6 +65,14 @@ const Sidebar = ({ isOpen, onClose }) => {
         >
           <Receipt size={20} />
           <span>Invoices</span>
+        </NavLink>
+        <NavLink 
+          to="/estimations" 
+          onClick={onClose}
+          className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+        >
+          <ClipboardList size={20} />
+          <span>Estimations</span>
         </NavLink>
       </nav>
 

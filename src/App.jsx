@@ -10,6 +10,8 @@ import VehicleForm from './pages/VehicleForm';
 import Invoices from './pages/Invoices';
 import InvoiceGenerator from './pages/InvoiceGenerator';
 import ServiceForm from './pages/ServiceForm';
+import Estimations from './pages/Estimations';
+import EstimationForm from './pages/EstimationForm';
 
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth();
@@ -39,6 +41,9 @@ function App() {
             <Route path="invoices" element={<Invoices />} />
             <Route path="invoices/new" element={<InvoiceGenerator />} />
             <Route path="invoices/edit/:invoiceId" element={<InvoiceGenerator />} />
+            <Route path="estimations" element={<Estimations />} />
+            <Route path="estimations/new" element={<EstimationForm />} />
+            <Route path="estimations/edit/:id" element={<EstimationForm />} />
           </Route>
         </Routes>
       </AuthProvider>
