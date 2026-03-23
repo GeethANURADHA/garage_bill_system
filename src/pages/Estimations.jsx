@@ -91,7 +91,8 @@ const Estimations = () => {
                 <th style={{ padding: '1.25rem 1.5rem' }}>Date</th>
                 <th style={{ padding: '1.25rem 1.5rem' }}>Vehicle & Owner</th>
                 <th style={{ padding: '1.25rem 1.5rem' }}>Damage Overview</th>
-                <th style={{ padding: '1.25rem 1.5rem' }}>Estimated Cost</th>
+                <th style={{ padding: '1.25rem 1.5rem' }}>Estimated Amount</th>
+                <th style={{ padding: '1.25rem 1.5rem' }}>Amended Amount</th>
                 <th style={{ padding: '1.25rem 1.5rem', textAlign: 'right' }}>Actions</th>
               </tr>
             </thead>
@@ -129,8 +130,15 @@ const Estimations = () => {
                       </p>
                     </td>
                     <td style={{ padding: '1.25rem 1.5rem' }}>
-                      <span style={{ fontWeight: '800', color: 'var(--primary)', fontSize: '1rem' }}>
-                        Rs. {Number(est.total_cost).toFixed(2)}
+                      <span style={{ fontWeight: '600', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                        Rs. {Number(est.total_cost || 0).toFixed(2)}
+                      </span>
+                    </td>
+                    <td style={{ padding: '1.25rem 1.5rem' }}>
+                      <span style={{ fontWeight: '800', color: 'var(--primary)', fontSize: '1.1rem' }}>
+                        {est.parts?.some(p => p.amended_price && p.amended_price !== 0) 
+                          ? `Rs. ${(Number(est.parts.reduce((sum, p) => sum + Number(p.amended_price || 0), 0)) + Number(est.labor_charges || 0) + Number(est.additional_charges || 0)).toFixed(2)}`
+                          : '--'}
                       </span>
                     </td>
                     <td style={{ padding: '1.25rem 1.5rem', textAlign: 'right' }}>

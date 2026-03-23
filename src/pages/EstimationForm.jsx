@@ -28,11 +28,12 @@ const EstimationForm = () => {
     date: new Date().toISOString().split('T')[0],
     insurance_company: '',
     damage_description: '',
-    parts: [{ id: Date.now().toString(), description: '', price: 0 }],
+    parts: [{ id: Date.now().toString(), description: '', price: '', amended_price: '' }],
     labor_charges: 0,
     parts_cost: 0,
     additional_charges: 0,
-    total_cost: 0
+    total_cost: 0,
+    total_amended_price: 0
   });
 
   useEffect(() => {
@@ -56,7 +57,7 @@ const EstimationForm = () => {
         if (estData) {
           setFormData({
             ...estData,
-            parts: estData.parts || [{ id: Date.now().toString(), description: '', price: 0 }]
+            parts: estData.parts || [{ id: Date.now().toString(), description: '', price: 0, amended_price: 0 }]
           });
         }
       }
@@ -96,7 +97,7 @@ const EstimationForm = () => {
   const addPart = () => {
     setFormData({
       ...formData,
-      parts: [...formData.parts, { id: Date.now().toString(), description: '', price: 0 }]
+      parts: [...formData.parts, { id: Date.now().toString(), description: '', price: '', amended_price: '' }]
     });
   };
 
@@ -115,128 +116,168 @@ const EstimationForm = () => {
   // Re-calculate totals whenever parts or charges change
   useEffect(() => {
     const partsTotal = formData.parts.reduce((sum, p) => sum + Number(p.price || 0), 0);
+    const amendedTotal = formData.parts.reduce((sum, p) => sum + Number(p.amended_price || 0), 0);
     const total = partsTotal + Number(formData.labor_charges || 0) + Number(formData.additional_charges || 0);
+    const hasAmended = formData.parts.some(p => p.amended_price !== '' && p.amended_price !== 0);
+    const totalAmended = hasAmended ? (amendedTotal + Number(formData.labor_charges || 0) + Number(formData.additional_charges || 0)) : null;
     
     setFormData(prev => ({
       ...prev,
       parts_cost: partsTotal,
-      total_cost: total
+      total_cost: total,
+      total_amended_price: totalAmended
     }));
   }, [formData.parts, formData.labor_charges, formData.additional_charges]);
 
   const generatePDF = () => {
-    const doc = new jsPDF();
-    
-    // Header
+    const doc = new jsPDF({
+      orientation: 'p',
+      unit: 'mm',
+      format: 'a4'
+    });
+
+    const pageWidth = doc.internal.pageSize.width;
+    const pageHeight = doc.internal.pageSize.height;
+    const margin = 15;
+    let y = margin;
+
+    // --- Header ---
     try {
-      doc.addImage(logo, 'PNG', 15, 10, 60, 30);
+      doc.addImage(logo, 'PNG', margin, y, 40, 20);
     } catch (e) {
       console.warn("Logo failed to load");
     }
-    
-    doc.setFontSize(22);
+
+    doc.setTextColor(0);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(33, 37, 41);
-    doc.text('ISHARA MOTORS', 195, 20, { align: 'right' });
+    doc.setFontSize(18);
+    doc.text('ISHARA MOTORS', pageWidth - margin, y + 8, { align: 'right' });
     
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(50, 50, 50);
-    doc.text('54/C, Sri Saranankara Mawatha, Rilawla, Polgasowita', 195, 27, { align: 'right' });
-    doc.text('Mobile: 0719656885 | 0773531005', 195, 33, { align: 'right' });
-    doc.text('Email: motorsishara65@gmail.com', 195, 39, { align: 'right' });
-
-    doc.setFontSize(18);
-    doc.setFont('times', 'bold');
-    doc.text('VEHICLE ESTIMATING SHEET', 105, 55, { align: 'center' });
-
-    // Details Grid
-    doc.setFontSize(11);
-    let y = 75;
-    
-    const drawRow = (label1, val1, label2, val2) => {
-      doc.setFont('helvetica', 'bold');
-      doc.text(label1, 20, y);
-      doc.setFont('helvetica', 'normal');
-      doc.text(String(val1 || 'N/A'), 60, y);
-      
-      if (label2) {
-        doc.setFont('helvetica', 'bold');
-        doc.text(label2, 110, y);
-        doc.setFont('helvetica', 'normal');
-        doc.text(String(val2 || 'N/A'), 150, y);
-      }
-      y += 10;
-    };
-
-    drawRow('Vehicle No:', formData.vehicle_number, 'Date:', formData.date);
-    drawRow('Model:', formData.vehicle_model, 'Contact No:', formData.contact_number);
-    drawRow('Owner Name:', formData.owner_name, 'Insurance:', formData.insurance_company);
-    
-    y += 5;
-    doc.setFont('helvetica', 'bold');
-    doc.text('Damage Description:', 20, y);
-    y += 7;
-    doc.setFont('helvetica', 'normal');
-    const splitDamage = doc.splitTextToSize(formData.damage_description || 'No description provided.', 170);
-    doc.text(splitDamage, 20, y);
-    y += (splitDamage.length * 6) + 5;
-
-    // Parts Table
-    doc.setFillColor(248, 250, 252);
-    doc.rect(15, y, 180, 10, 'F');
-    doc.setFont('helvetica', 'bold');
-    doc.text('Parts / Service Required', 20, y + 6.5);
-    doc.text('Estimated Cost', 175, y + 6.5, { align: 'right' });
-    
-    doc.line(15, y, 195, y);
-    doc.line(15, y + 10, 195, y + 10);
-    
-    y += 17;
-    doc.setFont('helvetica', 'normal');
-    formData.parts.forEach(part => {
-      if (part.description) {
-        doc.text(part.description, 20, y);
-        doc.text(Number(part.price).toFixed(2), 175, y, { align: 'right' });
-        y += 8;
-      }
+    const address = [
+      '54/C, Sri Saranankara Mawatha, Rilawla, Polgasowita',
+      'Mobile: 0719656885 | 0773531005',
+      'Email: motorsishara65@gmail.com'
+    ];
+    address.forEach((line, index) => {
+      doc.text(line, pageWidth - margin, y + 14 + (index * 4.5), { align: 'right' });
     });
 
-    // Summary
-    y += 5;
-    doc.line(110, y, 195, y);
-    y += 10;
+    y += 25;
+    doc.setDrawColor(0);
+    doc.setLineWidth(0.5);
+    doc.line(margin, y, pageWidth - margin, y);
     
-    const drawSummaryRow = (label, value, bold = false) => {
-      doc.setFont('helvetica', bold ? 'bold' : 'normal');
-      doc.text(label, 115, y);
-      doc.text(Number(value).toFixed(2), 175, y, { align: 'right' });
-      y += 8;
+    y += 10;
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('VEHICLE ESTIMATION SHEET', pageWidth / 2, y, { align: 'center' });
+
+    // --- Basic Info ---
+    y += 15;
+    doc.setFontSize(10);
+    doc.setLineWidth(0.1);
+    
+    const drawInfoRow = (label1, value1, label2, value2) => {
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(100, 116, 139); // Slate-500
+      doc.text(label1, margin, y);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(30, 41, 59); // Slate-800
+      doc.text(`: ${value1 || ''}`, margin + 35, y);
+
+      if (label2) {
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(100, 116, 139);
+        doc.text(label2, pageWidth / 2 + 5, y);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(30, 41, 59);
+        doc.text(`: ${value2 || ''}`, pageWidth / 2 + 45, y);
+      }
+      y += 7;
     };
 
-    drawSummaryRow('Labor Charges', formData.labor_charges);
-    drawSummaryRow('Additional Charges', formData.additional_charges);
-    y += 2;
-    doc.setFillColor(33, 37, 41);
-    doc.rect(110, y - 6, 85, 10, 'F');
-    doc.setTextColor(255);
-    drawSummaryRow('TOTAL ESTIMATED COST (Rs.)', formData.total_cost, true);
-    doc.setTextColor(0);
+    drawInfoRow('Date', new Date(formData.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }), 'Vehicle Number', formData.vehicle_number);
+    drawInfoRow('Vehicle Model', formData.vehicle_model, 'Owner Name', formData.owner_name);
 
-    // Signature
-    y += 30;
-    doc.line(20, y, 80, y);
-    doc.line(130, y, 190, y);
+    // --- Table ---
     y += 5;
-    doc.setFontSize(10);
-    doc.text('Customer Signature', 50, y, { align: 'center' });
-    doc.text('Authorized Signature', 160, y, { align: 'center' });
+    const tableTop = y;
+    const colWidths = { no: 12, desc: 100, est: 34, amended: 34 };
+    const colPos = {
+      no: margin,
+      desc: margin + colWidths.no,
+      est: margin + colWidths.no + colWidths.desc,
+      amended: margin + colWidths.no + colWidths.desc + colWidths.est
+    };
 
-    // Footer
+    // Header Background
+    doc.setFillColor(248, 250, 252); // Slate-50
+    doc.rect(margin, y, pageWidth - (margin * 2), 10, 'F');
+    
+    doc.setDrawColor(226, 232, 240); // Slate-200
+    doc.line(margin, y, pageWidth - margin, y);
+    doc.line(margin, y + 10, pageWidth - margin, y + 10);
+    
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(71, 85, 105); // Slate-600
+    doc.text('No.', colPos.no + 2, y + 6.5);
+    doc.text('Description', colPos.desc + 2, y + 6.5);
+    doc.text('Estimated (Rs.)', colPos.est + 2, y + 6.5);
+    doc.text('Amended (Rs.)', colPos.amended + 2, y + 6.5);
+
+    y += 10;
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(30, 41, 59);
+
+    // Table Content
+    formData.parts.forEach((item, index) => {
+      const rowHeight = 10;
+      doc.line(margin, y + rowHeight, pageWidth - margin, y + rowHeight);
+      
+      doc.text((index + 1).toString().padStart(2, '0'), colPos.no + 2, y + 6.5);
+      const descLines = doc.splitTextToSize(item.description || '', colWidths.desc - 4);
+      doc.text(descLines[0] || '', colPos.desc + 2, y + 6.5);
+      
+      doc.text(item.price ? `Rs. ${Number(item.price || 0).toFixed(2)}` : '', colPos.amended - 2, y + 6.5, { align: 'right' });
+      doc.text(item.amended_price ? `Rs. ${Number(item.amended_price || 0).toFixed(2)}` : '', pageWidth - margin - 2, y + 6.5, { align: 'right' });
+      
+      y += rowHeight;
+      if (y > pageHeight - 40) { doc.addPage(); y = margin; }
+    });
+
+    // Vertical borders
+    doc.setDrawColor(226, 232, 240);
+    doc.line(margin, tableTop, margin, y);
+    doc.line(colPos.desc, tableTop, colPos.desc, y);
+    doc.line(colPos.est, tableTop, colPos.est, y);
+    doc.line(colPos.amended, tableTop, colPos.amended, y);
+    doc.line(pageWidth - margin, tableTop, pageWidth - margin, y);
+
+    // Grand Totals
+    y += 10;
+    doc.setFillColor(248, 250, 252);
+    doc.rect(margin + colWidths.no + colWidths.desc, y, colWidths.est + colWidths.amended, 12, 'F');
+    doc.setDrawColor(226, 232, 240);
+    doc.rect(margin + colWidths.no + colWidths.desc, y, colWidths.est + colWidths.amended, 12);
+    
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(71, 85, 105);
+    doc.text('TOTAL ESTIMATED', colPos.est + 2, y + 5);
+    doc.text('TOTAL AMENDED', colPos.amended + 2, y + 5);
+    
+    doc.setFontSize(11);
+    doc.setTextColor(15, 23, 42);
+    doc.text(formData.total_cost ? `Rs. ${Number(formData.total_cost || 0).toFixed(2)}` : '', colPos.amended - 2, y + 10, { align: 'right' });
+    doc.text(formData.total_amended_price ? `Rs. ${Number(formData.total_amended_price || 0).toFixed(2)}` : '', pageWidth - margin - 2, y + 10, { align: 'right' });
+    
+    // Disclaimer
     doc.setFontSize(8);
-    doc.setTextColor(100);
-    doc.text('This is an estimation only. Final cost may vary upon further inspection.', 105, 280, { align: 'center' });
-    doc.text('Ishara Motors - Performance & Reliability', 105, 285, { align: 'center' });
+    doc.setTextColor(148, 163, 184);
+    doc.text('Thank you for choosing Ishara Motors!', pageWidth / 2, pageHeight - 15, { align: 'center' });
+    doc.text('Performance & Reliability Guaranteed', pageWidth / 2, pageHeight - 10, { align: 'center' });
 
     return doc;
   };
@@ -251,14 +292,23 @@ const EstimationForm = () => {
     try {
       // Clean up numeric fields to avoid "invalid input syntax for type numeric"
       const cleanedData = {
-        ...formData,
+        vehicle_id: formData.vehicle_id || null,
+        vehicle_number: formData.vehicle_number,
+        vehicle_model: formData.vehicle_model,
+        owner_name: formData.owner_name,
+        contact_number: formData.contact_number,
+        date: formData.date,
+        insurance_company: formData.insurance_company,
+        damage_description: formData.damage_description,
         labor_charges: Number(formData.labor_charges || 0),
         parts_cost: Number(formData.parts_cost || 0),
         additional_charges: Number(formData.additional_charges || 0),
         total_cost: Number(formData.total_cost || 0),
         parts: formData.parts.map(p => ({
-          ...p,
-          price: Number(p.price || 0)
+          id: p.id,
+          description: p.description,
+          price: Number(p.price || 0),
+          amended_price: Number(p.amended_price || 0)
         }))
       };
 
@@ -283,6 +333,11 @@ const EstimationForm = () => {
     doc.save(`Estimation_${formData.vehicle_number}_${formData.date}.pdf`);
   };
 
+  const handlePrint = () => {
+    const doc = generatePDF();
+    window.open(doc.output('bloburl'), '_blank');
+  };
+
   if (loading) return <div className="p-8">Loading form...</div>;
 
   return (
@@ -298,10 +353,16 @@ const EstimationForm = () => {
         </div>
         <div style={{ display: 'flex', gap: '1rem' }}>
           {isEditing && (
-             <button onClick={handleDownloadPDF} className="btn-primary" style={{ background: 'var(--secondary)' }}>
+            <>
+              <button onClick={handlePrint} className="btn-primary" style={{ background: 'var(--text-main)' }}>
+                <Plus size={20} />
+                Print Sheet
+              </button>
+              <button onClick={handleDownloadPDF} className="btn-primary" style={{ background: 'var(--secondary)' }}>
                 <FileText size={20} />
-                Print/Download PDF
-             </button>
+                Download PDF
+              </button>
+            </>
           )}
         </div>
       </div>
@@ -449,19 +510,24 @@ const EstimationForm = () => {
               <table style={{ border: 'none' }}>
                 <thead>
                   <tr style={{ background: 'var(--bg-main)' }}>
+                    <th style={{ width: '50px', padding: '0.75rem' }}>No.</th>
                     <th style={{ padding: '0.75rem' }}>Description</th>
-                    <th style={{ width: '150px', padding: '0.75rem' }}>Estimated Cost (Rs.)</th>
+                    <th style={{ width: '150px', padding: '0.75rem' }}>Estimated Amount (Rs.)</th>
+                    <th style={{ width: '150px', padding: '0.75rem' }}>Amended Amount (Rs.)</th>
                     <th style={{ width: '50px' }}></th>
                   </tr>
                 </thead>
                 <tbody>
-                  {formData.parts.map((part) => (
+                  {formData.parts.map((part, index) => (
                     <tr key={part.id}>
+                      <td style={{ border: 'none', padding: '0.5rem', textAlign: 'center', fontWeight: 'bold' }}>
+                        {(index + 1).toString().padStart(2, '0')}
+                      </td>
                       <td style={{ border: 'none', padding: '0.5rem' }}>
                         <input 
                           className="search-input"
                           style={{ paddingLeft: '1rem' }}
-                          placeholder="e.g. Front Bumper, Headlamp"
+                          placeholder="e.g. Front Bumper - Brand New"
                           value={part.description}
                           onChange={(e) => updatePart(part.id, 'description', e.target.value)}
                         />
@@ -473,6 +539,15 @@ const EstimationForm = () => {
                           style={{ paddingLeft: '1rem' }}
                           value={part.price}
                           onChange={(e) => updatePart(part.id, 'price', e.target.value)}
+                        />
+                      </td>
+                      <td style={{ border: 'none', padding: '0.5rem' }}>
+                        <input 
+                          type="number"
+                          className="search-input"
+                          style={{ paddingLeft: '1rem' }}
+                          value={part.amended_price}
+                          onChange={(e) => updatePart(part.id, 'amended_price', e.target.value)}
                         />
                       </td>
                       <td style={{ border: 'none', padding: '0.5rem' }}>
@@ -495,7 +570,7 @@ const EstimationForm = () => {
               <h3 style={{ fontSize: '1rem', opacity: 0.8, marginBottom: '1rem' }}>Cost Breakdown</h3>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                 <span style={{ fontSize: '0.9rem', opacity: 0.7 }}>Parts Total</span>
-                <span style={{ fontWeight: '600' }}>Rs. {formData.parts_cost.toFixed(2)}</span>
+                <span style={{ fontWeight: '600' }}>Rs. {(formData.parts_cost || 0).toFixed(2)}</span>
               </div>
             </div>
             
@@ -528,9 +603,16 @@ const EstimationForm = () => {
                 </div>
               </div>
 
-              <div style={{ marginTop: '1rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontWeight: '700' }}>Total Estimate</span>
-                <span style={{ fontWeight: '800', fontSize: '1.5rem', color: 'var(--primary)' }}>Rs. {formData.total_cost.toFixed(2)}</span>
+              <div style={{ marginTop: '1rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontWeight: '600', fontSize: '0.85rem' }}>Total Estimated</span>
+                  <span style={{ fontWeight: '700', fontSize: '1.1rem', color: 'var(--text-muted)' }}>Rs. {(formData.total_cost || 0).toFixed(2)}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontWeight: '800', fontSize: '1.5rem', color: 'var(--primary)' }}>
+                    {typeof formData.total_amended_price === 'number' ? `Rs. ${formData.total_amended_price.toFixed(2)}` : '--'}
+                  </span>
+                </div>
               </div>
 
               <button 
