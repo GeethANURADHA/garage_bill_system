@@ -34,10 +34,9 @@ const Login = () => {
       <div className="login-box">
         <div className="login-header">
           <div className="logo-display" style={{ marginBottom: '1.5rem' }}>
-            <img src={logo} alt="Ishara Motors Logo" style={{ width: '150px', height: 'auto', margin: '0 auto', display: 'block' }} />
+            <img src={logo} alt="Ishara Motors Logo" style={{ width: '200px', height: 'auto', margin: '0 auto', display: 'block' }} />
           </div>
-          <h1 style={{ fontSize: '1.5rem', marginTop: '1rem' }}>Garage Admin</h1>
-          <p>Sign in to manage your garage</p>
+          <p>Sign in to manage your garage portal</p>
         </div>
         
         <form onSubmit={handleSubmit} className="login-form">

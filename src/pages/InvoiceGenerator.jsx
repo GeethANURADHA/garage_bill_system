@@ -104,26 +104,20 @@ const InvoiceGenerator = () => {
 
     const doc = new jsPDF();
     
-    // Header Section
     // Logo (Top Left)
     try {
-      doc.addImage(logo, 'PNG', 15, 10, 60, 30);
+      doc.addImage(logo, 'PNG', 15, 10, 70, 35);
     } catch (e) {
       console.warn("Logo failed to load in PDF", e);
     }
     
-    // Business Info (Top Right)
-    doc.setFontSize(22);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(33, 37, 41);
-    doc.text('ISHARA MOTORS', 195, 20, { align: 'right' });
-    
+    // Business Info (Top Right - Address & Contact)
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(50, 50, 50);
-    doc.text('54/C, Sri Saranankara Mawatha, Rilawla, Polgasowita', 195, 27, { align: 'right' });
-    doc.text('Mobile: 0719656885', 195, 33, { align: 'right' });
-    doc.text('Email: motorsishara65@gmail.com', 195, 39, { align: 'right' });
+    doc.text('54/C, Sri Saranankara Mawatha, Rilawla, Polgasowita', 195, 20, { align: 'right' });
+    doc.text('Mobile: 0719656885', 195, 26, { align: 'right' });
+    doc.text('Email: motorsishara65@gmail.com', 195, 32, { align: 'right' });
 
     // Center Title "INVOICE"
     doc.setFontSize(18);

@@ -36,8 +36,7 @@ const Sidebar = ({ isOpen, onClose }) => {
           <img src={logo} alt="Ishara Motors Logo" style={{ width: '100%', height: 'auto', borderRadius: '0.5rem' }} />
         </div>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <span className="sidebar-brand" style={{ fontSize: '1.2rem', letterSpacing: '-0.5px' }}>Ishara Motors</span>
-          <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: '600' }}>GARAGE PORTAL</span>
+          <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: '600', letterSpacing: '1px' }}>GARAGE PORTAL</span>
         </div>
       </div>
 
